@@ -1,0 +1,109 @@
+useDynLib(ppstat, .registration = TRUE)
+
+import(methods)
+import(ggplot2)
+import(Matrix)
+
+importFrom("splines",
+           splineDesign)
+       
+importFrom("stats",
+           family,
+           predict,
+           simulate,
+           vcov)
+
+importFrom("graphics", 
+           plot)
+
+importFrom("utils", 
+           object.size, 
+           str)
+           
+exportClasses(ContinuousProcess,
+              Family,
+              JumpProcess,
+              MarkedPointProcess,
+              MultivariatePointProcess,
+              PointProcess,
+              PointProcessModel,
+              PointProcessSmooth,
+              PointProcessKernel,
+              ProcessData
+              )
+
+export(bSpline,
+       coefficients,
+       const,
+       formula,
+       expFilterScale,
+       gaussianKernel,
+       Gibbs,
+       Hawkes,
+       hawkesRate,
+       invHaz,
+       Ogata,
+       pointProcessModel,
+       ppKernel,
+       ppLasso,
+       ppSmooth,
+       registerParBackend,
+       sobolevKernel,
+       tExp,
+       weibullInv,
+       update)
+
+S3method(print,
+         summary.ppm)
+
+exportMethods("coefficients",
+              "coefficients<-",
+              "computeMinusLogLikelihood",
+              "computeDMinusLogLikelihood",
+              "computeDDMinusLogLikelihood",
+              "family",
+              "formula",
+              "getColumns",
+              "getInformation",
+              "getLinearFilter",
+              "getEquiDistance",
+              "getId",
+              "getFactors",
+              "getPointId",
+              "getMarkType",
+              "getMarkValue",
+              "getNumerics",
+              "getPlotData",
+              "getPointTime",
+              "getPointPosition",
+              "getPointPointer",
+              "getPosition",
+              "getTime",
+              "getValue",
+              "getUnitData",
+              "penalty",
+              "penalty<-",
+              "predict",
+              "ppmFit",
+              "processData",
+              "simulate",
+              "stepInformation",
+              "subset",
+              "summary",
+              "termPlot",
+              "update",
+              "vcov",
+              "continuousProcess",
+              "colNames",
+              "dim",
+              "integrator",
+              "jumpProcess",
+              "markedPointProcess",
+              "object.size",
+              "plot",
+              "process",
+              "str",
+              "subset",
+              "summary",
+              "unsubset",
+              "[")
