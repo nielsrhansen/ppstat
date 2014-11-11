@@ -1,7 +1,7 @@
 Package: ppstat
 Type: Package
 Title: Point Process Statistics
-Version: 0.9.6
+Version: 0.9.7
 Date: 2014-09-23
 Author: Niels Richard Hansen <Niels.R.Hansen@math.ku.dk>.
 Maintainer: Niels Richard Hansen <Niels.R.Hansen@math.ku.dk>
@@ -14,14 +14,17 @@ Imports:
   splines, 
   Matrix, 
   parallel,
-  reshape2  
-Suggests: 
+  reshape2
+Suggests:
   RUnit, 
   glmnet, 
-  MatrixModels
-Description: 
+  MatrixModels,
+  knitr
+Description:
   This package implements data structures and statistical models and 
   methods for one-dimensional marked point processes.  	  
+VignetteBuilder:
+  knitr
 License: GPL (>= 2)
 URL: http://www.math.ku.dk/~richard/ppstat
 LazyLoad: yes
