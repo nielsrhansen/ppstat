@@ -1,0 +1,177 @@
+---
+title: "Introduction to ppstat"
+author: "Niels Richard Hansen"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Introduction to ppstat}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r init0, echo=FALSE}
+ggplot2::theme_set(ggplot2::theme_bw())
+knitr::opts_chunk$set(tidy = FALSE)
+```
+
+
+```{r init, message=FALSE}
+library(ppstat)
+set.seed(99)
+```
+
+The `ppstat` package implements a model class where the intensity of the point process is given in terms of a backward moving average (also known as a causal filter) with filter function $h$. In the general framework the intensity is given as 
+$$\lambda_t = \varphi\left(\beta_0 + \int_{t-A}^{t-} h(t - s) \mathrm{d}N_s\right).$$
+This introduction treats a concrete example starting with simulation of data from the model, then model fitting using several different approaches and finally model checking.
+
+# Intensities  
+
+In this introduction we consider the model with intensity
+
+$$\lambda_t = \exp\left(1 - \int_{t-1.5}^{t-} 0.2 + \cos(\pi(t - s)) \mathrm{d}N_s\right).$$
+
+Thus $\varphi = \exp$, $h(s) = -0.2  - \cos(\pi s)$ and $A = 1.5$. The number $A$ effectively bounds the support of $h$ to the interval $[0,A]$, and it determines how far back in time the moving average extends. 
+
+The simulation algorithm implemented in `ppstat` does not take $A$ and $h$ as arguments directly, but instead it takes the evaluation of $h$ in a grid.
+
+```{r filter function, fig.width=6, fig.align='center'}
+Delta <- 0.001
+A <- 1.5
+h <- - 0.2 - cos(pi * seq(0, A, Delta)) 
+q <- geom_line(data = data.frame(
+  s = seq(0, A, Delta),
+  h = h),
+  aes(x = s, y = h),
+  color = "red")
+qplot() + q + scale_y_continuous("h")
+```
+
+The simulation is carried out using the `Ogata` function with the function `hawkesRate` 
+specifying how the computation of the actual intensity as a function of the history is carried out as a backward moving average. 
+
+```{r sim}
+T <- Ogata(100, 
+           lambda = hawkesRate(
+             h = h,
+             Delta = Delta,
+             beta0 = 1,
+             A = A,
+             phi = exp
+             )
+           )
+```
+
+The `Ogata` function is a generic implementation of the Ogata modified thinning algorithm for univariate as well as multivariate point processes. By implementing an R function that computes the intensity for a point process given its history (for details, see the help page for `Ogata`), the `Ogata` function can be used to simulate from the process. 
+
+# A data object
+
+To fit a model we have to convert the data into a data object of class `MarkedPointProcess`. The `ppstat` package implements a collection of data containers suitable for combinations of point process and continuous process data. To illustrate the use of some of these data containers we construct a data object that contains the intensity of the simulated process in addition to the actual event times. Note that this is done for pedagogical reasons only. For real data you won't be able to compute the true intensity process. The intensity can be computed in a grid using the `hawkesRate` function again. 
+
+
+```{r intensity}
+Delta1 <- 0.01
+time <- seq(0, max(T), Delta1) 
+lamb <- numeric(length(time))
+lambda <- hawkesRate(h, A = A, Delta = Delta, beta0 = 1, phi = exp)
+TT <- list(T)
+for(i in seq_along(lamb)) {
+  NN <- sum(T < time[i])
+  lamb[i] <- lambda(t = time[i], T = TT, N = NN)
+  }
+```
+
+Then we combine the event times and the intensity into a `MarkedPointProcess` object, and we 
+plot it. The constructor used is technically the one with class signature `'vector,data.frame'`.
+See the help page for `markedPointProcess` for the different class signatures that can be used to construct a `MarkedPointProcess` object.
+
+```{r process, fig.width=7, fig.align='center'}
+intensity <- data.frame(
+  time = time,
+  lambda = lamb
+  )
+introProc <- markedPointProcess(
+  pointData = T, 
+  continuousData = intensity                              
+  )
+plot(introProc, y = "lambda")  ## Events are plotted 'on the intensity process'.
+```
+
+# The first model
+
+The first model fitted has intensity 
+
+$$\lambda_t = \exp\left(\beta_0 + \int_{t-1.5}^{t-} \beta_1 + \beta_2 \cos(\pi(t - s))
++  \beta_3 \sin(\pi(t - s))\mathrm{d}N_s\right).$$
+
+for a 4-dimensional parameter $(\beta_0, \beta_1, \beta_2, \beta_3)$. The parameters are estimated
+using the function `pointProcessModel`, whose usage is modeled after `glm`. The resulting object of class 
+`PointProcessModel` has a summary method, which can be useful for a model like this with a few 
+parameters. 
+
+```{r fitting, fig.width=5, fig.align='center'}
+cospi <- function(t) cos(pi * t)
+sinpi <- function(t) sin(pi * t)
+ppmintro1 <- pointProcessModel(point ~ const(point) + cospi(point) + sinpi(point),
+                             data = introProc,
+                             family = Hawkes("log"),
+                             support = 1.5)
+summary(ppmintro1)
+termPlot(ppmintro1) + q  
+```
+
+The `termPlot` method may be more useful for displaying the fitted filter function $h$ including a standard pointwise 95% confidence band rather than printing the individual parameters.
+The true filter function is added to the plot above in red. 
+
+# Using different basis expansions
+
+In the model above we essentially made an expansion of the filter function $h$ using two terms in a Fourier series. It is rarely the case that we know just the right basis function(s) to choose, and we could include Fourier terms with higher frequency, or we could use other basis functions such as B-splines. Likewise, it is rarely known exactly what the correct choice of support $A$ is. It should in practice be chosen sufficiently large for the given data. Some adaptive experimentation is typically needed. 
+
+We give an example below of fitting a model using a set of B-spline basis functions 
+on the interval $[0,4]$ with equidistant knots. The knots should extend a little beyond 
+the interval -- otherwise the resulting function will be forced equal to 0 
+on the boundary of the interval. 
+
+```{r splines}
+ppmintro2 <- pointProcessModel(point ~ bSpline(point, knots = seq(-0.5, 4.5, 0.3)),
+                             data = introProc,
+                             family = Hawkes("log"),
+                             support = 4)
+summary(ppmintro2)
+```
+
+The function `bSpline` is a wrapper of the function `splineDesign` from the package `splines`. 
+The summary is not particularly informative for this basis expansion. A plot of the filter function is shown below together with a plot for a smooth fit. 
+
+# A smooth fit 
+
+An alternative to the choice of a (relatively small) set of basis functions is to use penalized estimation with a large number of basis functions. This is implemented via the functions `ppSmooth` and `ppKernel`.  
+The function `ppKernel` uses expansions and a penalization that is determined via a kernel function and its corresponding reproducing kernel Hilbert space. The function `ppSmooth` uses a spline basis together with a standard roughness penalty (the 2-norm of the second derivative of the filter function). 
+The tradeoff between smoothness and model fit is controlled by a penalty parameter $\lambda$. Larger values result in smoother estimates of the filter function.
+
+```{r smoother, fig.show='hold'}
+ppmintro3 <- ppSmooth(point ~ s(point),
+                    data = introProc,
+                    family = Hawkes("log"),
+                    support = 4,
+                    lambda = 0.05)
+termPlot(ppmintro2) + q +
+  coord_cartesian(ylim = c(-2, 1.5))
+termPlot(ppmintro3) + q +
+  coord_cartesian(ylim = c(-2, 1.5))
+```
+
+# Comparing the models
+
+Below, the 3 fitted models are compared with the true model in terms of their resulting predicted intensities. 
+
+```{r predictSplines, fig.width=7, fig.align='center'}
+lambda <- as.numeric(getNumerics(introProc))
+intensity <- data.frame(time = getTime(introProc), 
+                        lambdaHat1diff = predict(ppmintro1) - lambda,
+                        lambdaHat2diff = predict(ppmintro2) - lambda,
+                        lambdaHat3diff = predict(ppmintro3) - lambda
+                        )
+introProcMod <- markedPointProcess(T, intensity)
+plot(introProcMod)
+```
+
+
