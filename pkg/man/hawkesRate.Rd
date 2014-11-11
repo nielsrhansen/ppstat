@@ -34,7 +34,7 @@ This function computes
 if \code{bound = FALSE}. It is an error to allow for event times in the history that 
 doesn't strictly preceed \code{t} when \code{bound = FALSE}. If \code{bound = TRUE} 
 equality is allowed. The latter option is used to compute bounds on the intensity until the next 
-event occurs, which in turn is used in Ogatas thinning algorithm. 
+event occurs, which in turn is used in Ogata's thinning algorithm. 
 
 The algorithm requires the specification of filter functions \code{h} 
 (a lists of lists of function evaluations) and a bound, \code{A}, on how much history is needed. 

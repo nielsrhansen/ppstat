@@ -36,7 +36,7 @@ ppSmooth <- function(
   formula(model) <- form
   model <- as(model, "PointProcessSmooth")
   model@smoothTerms <- smoothTerms
-  ## 'knots' is passed further on to 'computeBasis' as the knot-selection strategy.
+  ## 'knots' is passed on to 'computeBasis' as the knot-selection strategy.
   model <- computeModelMatrix(model, strategy = knots)
   
   nc <- ncol(getModelMatrix(model))
@@ -106,9 +106,12 @@ setMethod("computeBasis", "PointProcessSmooth",
                                as.integer(d))
                 Gram <- matrix(0, d, d)
                 diag(Gram) <- s[[1]] / cs^2
-                Gram[seq(2, d*d, d+1)] <- Gram[seq(d+1, d*d, d+1)] <- s[[2]][1:(d-1)] / (cs[1:(d-1)] * cs[2:d])
-                Gram[seq(3, d*(d-1), d+1)] <- Gram[seq(2*d+1, d*d, d+1)] <- s[[3]][1:(d-2)] / (cs[1:(d-2)] * cs[3:d])
-                Gram[seq(4, d*(d-2), d+1)] <- Gram[seq(3*d+1, d*d, d+1)] <- s[[4]][1:(d-3)] / (cs[1:(d-3)] * cs[4:d])
+                Gram[seq(2, d*d, d+1)] <- Gram[seq(d+1, d*d, d+1)] <- 
+                  s[[2]][1:(d-1)] / (cs[1:(d-1)] * cs[2:d])
+                Gram[seq(3, d*(d-1), d+1)] <- Gram[seq(2*d+1, d*d, d+1)] <- 
+                  s[[3]][1:(d-2)] / (cs[1:(d-2)] * cs[3:d])
+                Gram[seq(4, d*(d-2), d+1)] <- Gram[seq(3*d+1, d*d, d+1)] <- 
+                  s[[4]][1:(d-3)] / (cs[1:(d-3)] * cs[4:d])
                 GramSpec <- eigen(Gram[2:(d-1), 2:(d-1)], symmetric = TRUE)
                 V <- diag(1, d)
                 V0 <- GramSpec$vectors 

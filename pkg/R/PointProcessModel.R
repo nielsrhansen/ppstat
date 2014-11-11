@@ -48,7 +48,7 @@ pointProcessModel <- function(
   ## single formula. 
   
   if (is.list(formula)) {
-    ## Extract all terms used in any of the formulae to create a
+    ## Extract all terms used in any of the formulas to create a
     ## super formula.
     superFormula <- reformulate(unlist(lapply(formula, function(f) attr(terms(f), "term.labels"))))
     formula(model) <- superFormula
