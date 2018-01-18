@@ -5,7 +5,7 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{Introduction to ppstat}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r init0, echo=FALSE}
@@ -100,7 +100,7 @@ plot(introProc, y = "lambda")  ## Events are plotted 'on the intensity process'.
 The first model fitted has intensity 
 
 $$\lambda_t = \exp\left(\beta_0 + \int_{t-1.5}^{t-} \beta_1 + \beta_2 \cos(\pi(t - s))
-+  \beta_3 \sin(\pi(t - s))\mathrm{d}N_s\right).$$
++ \beta_3 \sin(\pi(t - s))\mathrm{d}N_s\right).$$
 
 for a 4-dimensional parameter $(\beta_0, \beta_1, \beta_2, \beta_3)$. The parameters are estimated
 using the function `pointProcessModel`, whose usage is modeled after `glm`. The resulting object of class 

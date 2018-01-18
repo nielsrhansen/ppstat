@@ -168,8 +168,8 @@ setReplaceMethod("setModels", "MultivariatePointProcess",
                    
                    for(i in seq_along(value)) {
                      to <- response(value[[i]])
-                     from <- setdiff(all.vars(formula(value[[i]])), to)
-                     adjMat[to, from] <- 1L
+                     from <- all.vars(formula(value[[i]]))
+                     adjMat[from, to] <- 1L
                    }
                    
                    model@adjMat <- adjMat

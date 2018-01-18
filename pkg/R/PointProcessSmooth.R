@@ -11,11 +11,10 @@ ppSmooth <- function(
   fit = TRUE,
   varMethod = 'Fisher',
   ...) {
-  
   call <- sCall <- match.call()
   sCall[[1]] <- quote(pointProcessModel)
   sCall$fit <- sCall$modelMatrix <- FALSE
-  form <- eval(sCall$formula)
+  form <- eval(sCall$formula, parent.frame())
   
   ### Construction of the basis expansions
   terms <- terms(formula, "s")
