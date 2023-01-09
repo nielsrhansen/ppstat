@@ -1,0 +1,176 @@
+---
+title: "Data Containers and Data Visualization"
+author: "Niels Richard Hansen"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Data Containers and Data Visualization}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r init, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot2::theme_set(ggplot2::theme_bw())
+knitr::opts_chunk$set(dpi = 144, fig.width= 6, fig.height = 4, out.width = "90%", fig.align = "center")
+```
+
+This vignette demonstrates how to use the classes `ContinuousProcess`,
+`MarkedPointProcess` and `JumpProcess` as data containers and how 
+to visualize the data they contain.
+
+First we load the example data. The data sets are `contExam` of class
+`ContinuousProcess`, `pointExam` of class `MarkedPointProcess` and
+`jumpExam` of class `JumpProcess`.
+
+```{r }
+library(ppstat)
+data(example)
+```
+
+Showing data structure. 
+
+```{r }
+contExam
+```
+
+Summarizing the data.
+
+```{r }
+summary(contExam)
+```
+
+Plotting data.
+
+```{r }
+plot(contExam)
+```
+
+Subsetting data.
+
+```{r }
+subset(contExam, id %in% c("C","D","F"))
+subset(contExam, foo > 0)
+subset(contExam, gender == "F")
+```
+
+Plotting a subset.
+
+```{r }
+plot(subset(contExam, subset = (time > 4 & gender == "F"), select = foo))
+```
+
+Modifying plot using ggplot2.
+
+```{r }
+plot(subset(contExam, id == "A")) + geom_point()
+plot(contExam) + facet_null()
+```
+
+More sophisticated plots can be produced, e.g. different uses of
+faceting and grouping.
+
+```{r }
+plot(contExam) + facet_grid(variable ~ ., scale = "free_y")
+```
+
+To do this depending on unit-specific variables we must specify an
+additional argument to the plot such that these variables are
+included in the plot data.
+
+```{r }
+plot(contExam, allUnitData = TRUE) +
+  facet_grid(variable ~ gender, scale = "free_y")
+```
+
+Subsetting to non-contiguous subsets of the time axis is
+possible, but `plot` assumes a contiguous x-axis and interpolates
+the graph.
+
+```{r }
+plot(subset(contExam, id == "A" & (time < 2 | time > 4)))
+```
+
+Factor columns are plotting using a different aesthetic mapping.
+
+```{r }
+plot(factExam)
+```
+
+The default is to drop one level (the first), but this can be
+changed or bypassed by setting the `dropLevels argument.
+
+```{r }
+plot(factExam, dropLevels = 2)
+plot(factExam, dropLevels = NULL)
+```
+
+Summarizing a MarkedPointProcess object gives additional
+informations on the number of points for each unit and each mark. 
+
+```{r }
+summary(pointExam)
+```
+
+A combined plot for unit "A". 
+
+```{r }
+plot(subset(pointExam, id =="A"))
+```
+
+Plotting the point process data only.
+
+```{r }
+plot(pointExam[, -(1:3)])
+```
+
+Or a slightly different version.
+
+```{r }
+plot(pointExam[, -(1:3)], y = "id") + facet_null()
+```
+
+Plotting the continuous process data only.
+
+```{r }
+plot(pointExam[, -c(4,5)])
+```
+
+or 
+
+```{r }
+plot(as(pointExam, "ContinuousProcess"))
+```
+
+Some modifications of the plot.
+
+```{r }
+plot(pointExam, allUnitData = TRUE) + facet_grid(.~gender)
+plot(pointExam, y = "id", allUnitData = TRUE) + facet_grid(variable~gender, scale = "free_y")
+plot(pointExam, y = "foo") 
+plot(pointExam, y = "@top", allUnitData = TRUE) + facet_grid(.~gender)
+plot(pointExam, y = "@bottom", allUnitData = TRUE) + facet_grid(gender~., scales = "free_y")
+plot(pointExam, y = "id") + facet_null()
+```
+
+A `JumpProcess` data set has points with the same marks as the variable names
+in the `ContinuousProcess` part of the data set. In addition, to each point
+there is a size of the jump associated.
+
+```{r }
+jumpExam
+plot(jumpExam)
+```
+
+We can again use ggplot2 for modifications
+
+```{r }
+plot(jumpExam) + facet_grid(variable ~ .) + aes(color = id)
+```
+
+Removing objects.
+
+```{r }
+rm(contExam)
+rm(pointExam)
+rm(jumpExam)
+```
+

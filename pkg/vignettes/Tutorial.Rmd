@@ -10,7 +10,7 @@ vignette: >
 
 ```{r init0, echo=FALSE}
 ggplot2::theme_set(ggplot2::theme_bw())
-knitr::opts_chunk$set(tidy = FALSE)
+knitr::opts_chunk$set(dpi = 144, out.width = "90%", tidy = FALSE)
 ```
 
 
@@ -42,7 +42,7 @@ q <- geom_line(data = data.frame(
   h = h),
   aes(x = s, y = h),
   color = "red")
-qplot() + q + scale_y_continuous("h")
+ggplot() + q + scale_y_continuous("h")
 ```
 
 The simulation is carried out using the `Ogata` function with the function `hawkesRate` 
@@ -134,7 +134,7 @@ on the boundary of the interval.
 ppmintro2 <- pointProcessModel(point ~ bSpline(point, knots = seq(-0.5, 4.5, 0.3)),
                              data = introProc,
                              family = Hawkes("log"),
-                             support = 4)
+                             support = 3)
 summary(ppmintro2)
 ```
 
@@ -147,11 +147,11 @@ An alternative to the choice of a (relatively small) set of basis functions is t
 The function `ppKernel` uses expansions and a penalization that is determined via a kernel function and its corresponding reproducing kernel Hilbert space. The function `ppSmooth` uses a spline basis together with a standard roughness penalty (the 2-norm of the second derivative of the filter function). 
 The tradeoff between smoothness and model fit is controlled by a penalty parameter $\lambda$. Larger values result in smoother estimates of the filter function.
 
-```{r smoother, fig.show='hold'}
+```{r smoother, fig.width = 7, fig.show='hold'}
 ppmintro3 <- ppSmooth(point ~ s(point),
                     data = introProc,
                     family = Hawkes("log"),
-                    support = 4,
+                    support = 3,
                     lambda = 0.05)
 termPlot(ppmintro2) + q +
   coord_cartesian(ylim = c(-2, 1.5))

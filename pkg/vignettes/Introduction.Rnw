@@ -359,7 +359,7 @@ For the \verb+MarkedPointProcess+ class there are additional extractor
 methods \verb+getPointTime+ and \verb+getPointId+ that extract the event
 times and corresponding event unit ids, respectively.
 
-Both classes have the self-explaning \verb+dim+ and \verb+colNames+
+Both classes have the self-explaining \verb+dim+ and \verb+colNames+
 methods.
 
 A central method for data extraction is \verb+getColumns+. It takes a
@@ -380,7 +380,7 @@ their return values.
 The actual implementation is in principle irrelevant to the end
 user. Only the constructors and the interface to access and
 extract the data, as summarized above, are needed. This section gives
-a some more technical details for the interested on the implementation
+some more technical details for the interested on the implementation
 and the internal design. 
 
 First, the actual data are regarded as \emph{immutable}. The intention
