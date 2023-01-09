@@ -25,13 +25,13 @@ vignette("Tutorial", package = "ppstat")
 ```
 
 To see examples of how univariate and multivariate point processes can be 
-fitted, you can run a demo.
+fitted, you can check out the Toy Models vignette.
 
 ```
-demo("toyModels", package = "ppstat")
+vignette("toyModels", package = "ppstat")
 ```
 
-One of the most important things to understand is that models can only be fitted
+One important thing is that ppstat only fit models 
 to data that are contained in an object of class MarkedPointProcess. Such objects 
 can be constructed via the markedPointProcess function. The following vignette 
 gives an introduction to the data structures that ppstat relies on.
@@ -40,10 +40,8 @@ gives an introduction to the data structures that ppstat relies on.
 vignette("Introduction", package = "ppstat")
 ```
 
-There is also a demo
+See also the additional vignette on data containers and data visualization.
 
 ```  
-demo("dataContainers", package = "ppstat")
+vignette("dataContainers", package = "ppstat")
 ```
-
-that illustrates some of the functionalities. 

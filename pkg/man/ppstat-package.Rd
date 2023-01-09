@@ -14,10 +14,10 @@ point process models.
 \tabular{ll}{
 Package: \tab ppstat\cr
 Type: \tab Package\cr
-Version: \tab 0.9.6 \cr
-Date: \tab 2014-10-13 \cr
+Version: \tab 0.9.8 \cr
+Date: \tab 2023-01-09 \cr
 License: \tab GPL version 2 or newer \cr
-URL: \tab http://www.math.ku.dk/~richard/ppstat \cr
+URL: \tab https://github.com/nielsrhansen/ppstat \cr
 LazyLoad: \tab yes\cr
 }
 
