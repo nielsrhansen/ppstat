@@ -253,7 +253,7 @@ setMethod("computeModelMatrix", "PointProcessKernel",
                                          
                                          designList[[i]] <- Matrix(xZ, nrow = nt, sparse = TRUE)
                                        }
-                                       localDesign <- do.call("rBind", designList)
+                                       localDesign <- do.call("rbind", designList)
                                        colnames(localDesign) <- paste(term, 1:r, sep = "")
                                        localDesign ## The return value
                                      },     
@@ -267,7 +267,7 @@ setMethod("computeModelMatrix", "PointProcessKernel",
             )
             )
             names(design) <- termLabels[kernelTerms]
-            kernelMatrix <- do.call("cBind", design)
+            kernelMatrix <- do.call("cbind", design)
             form <- formula(model)
             attr(form, "kernelTerms") <- kernelTerms
             model <- updateKernelMatrix(model, kernelMatrix, assign, form)
@@ -397,7 +397,7 @@ setMethod("computeDDMinusLogLikelihood", "PointProcessKernel",
               
               pointers <- getPointPointer(processData(model), response(model))
               HU <- H[pointers, , drop = FALSE] %*% U
-              Z <- cBind(Z, HU)
+              Z <- cbind(Z, HU)
               if (is.null(coefficients)) 
                 coefficients <- coefficients(model)
               
@@ -424,7 +424,7 @@ setMethod("computeDDMinusLogLikelihood", "PointProcessKernel",
                 
                 pointers <- getPointPointer(processData(model), response(model))
                 HU <- H[pointers, , drop = FALSE] %*% U
-                Z <- cBind(Z, HU)
+                Z <- cbind(Z, HU)
                 
                 etaP <- eta[pointers]
                 w1 <- Diagonal(x = model@family@D2phi(eta) * model@delta)

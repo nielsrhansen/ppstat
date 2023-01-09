@@ -160,7 +160,7 @@ processX <- continuousProcess(X)
 
 Summarizing the data set reveals the structure we now have. 
 
-<<processXXsummary>>=
+<<processXsummary>>=
 summary(processX)
 @ 
 

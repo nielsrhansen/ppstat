@@ -566,7 +566,7 @@ setMethod("computeModelMatrix", "PointProcessModel",
                                                                            zero,
                                                                            'p'))
                                          }
-                                         localDesign <- do.call("rBind", designList)
+                                         localDesign <- do.call("rbind", designList)
                                          colnames(localDesign) <- colnames(basis)
                                        } else if (all(variable %in% c(DcontinuousVar, DpositionVar))) {
                                          
@@ -597,7 +597,7 @@ setMethod("computeModelMatrix", "PointProcessModel",
                                                                            zero,
                                                                            'c'))
                                          }
-                                         localDesign <- do.call("rBind", designList)
+                                         localDesign <- do.call("rbind", designList)
                                          colnames(localDesign) <- colnames(basis)
                                        } 
                                        localDesign ## The return value
@@ -691,9 +691,9 @@ setMethod("computeModelMatrix", "PointProcessModel",
             } 
             
             if (exists("modelMatrix0")) {
-              modelMatrix <- cBind(modelMatrix0, do.call("cBind", design))
+              modelMatrix <- cbind(modelMatrix0, do.call("cbind", design))
             } else {
-              modelMatrix <- do.call("cBind", design)
+              modelMatrix <- do.call("cbind", design)
             }
             form <- formula(model)
             attr(form, "filterTerms") <- which(!(seq(along=termLabels) %in% notFilterTerms))
@@ -789,7 +789,7 @@ setMethod("computeVar", "PointProcessModel",
                      }
                      vcov <- matrix(0, nrow = nrow(J), ncol = ncol(J))
                      tmp <- try(solve(J), silent = TRUE)
-                     if (class(tmp) == "try-error") {
+                     if (class(tmp)[1] == "try-error") {
                        message("Fisher information singular:\n", tmp[1],
                                " Check convergence status or parametrization.")
                      } else {
@@ -811,7 +811,7 @@ setMethod("computeVar", "PointProcessModel",
                      vcov <- matrix(0, nrow = dim(vcovInv)[1],
                                     ncol=dim(vcovInv)[2])
                      tmp <- try(solve(vcovInv), silent = TRUE)
-                     if (class(tmp) == "try-error") {
+                     if (class(tmp)[1] == "try-error") {
                        message("Fisher information singular:\n", tmp[1], " Check convergence status or parameterization.")
                      } else {
                        vcov <- tmp
